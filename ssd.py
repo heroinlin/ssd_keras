@@ -12,7 +12,7 @@ from keras.layers import add, concatenate
 from keras.layers import Reshape
 from keras.layers import ZeroPadding2D
 from keras.models import Model
-
+import tensorflow as tf
 from ssd_layers import Normalize
 from ssd_layers import PriorBox
 
@@ -30,7 +30,7 @@ def SSD300(input_shape, num_classes=21):
     """
     net = {}
     # Block 1
-    input_tensor = input_tensor = Input(shape=input_shape)
+    input_tensor = Input(shape=input_shape)
     img_size = (input_shape[1], input_shape[0])
     net['input'] = input_tensor
     net['conv1_1'] = Conv2D(64, (3, 3), activation="relu", name="conv1_1", padding="same")(net['input'])
@@ -78,15 +78,13 @@ def SSD300(input_shape, num_classes=21):
     num_priors = 3
     x = Conv2D(num_priors * 4, (3, 3), name="conv4_3_norm_mbox_loc", padding="same")(net['conv4_3_norm'])
     net['conv4_3_norm_mbox_loc'] = x
-    flatten = Flatten(name='conv4_3_norm_mbox_loc_flat')
-    net['conv4_3_norm_mbox_loc_flat'] = flatten(net['conv4_3_norm_mbox_loc'])
+    net['conv4_3_norm_mbox_loc_flat'] = Flatten(name='conv4_3_norm_mbox_loc_flat')(net['conv4_3_norm_mbox_loc'])
     name = 'conv4_3_norm_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     x = Conv2D(num_priors * num_classes, (3, 3), name=name, padding="same")(net['conv4_3_norm'])
     net['conv4_3_norm_mbox_conf'] = x
-    flatten = Flatten(name='conv4_3_norm_mbox_conf_flat')
-    net['conv4_3_norm_mbox_conf_flat'] = flatten(net['conv4_3_norm_mbox_conf'])
+    net['conv4_3_norm_mbox_conf_flat'] = Flatten(name='conv4_3_norm_mbox_conf_flat')(net['conv4_3_norm_mbox_conf'])
     priorbox = PriorBox(img_size, 30.0, aspect_ratios=[2],
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv4_3_norm_mbox_priorbox')
@@ -94,14 +92,12 @@ def SSD300(input_shape, num_classes=21):
     # Prediction from fc7
     num_priors = 6
     net['fc7_mbox_loc'] = Conv2D(num_priors * 4, (3, 3), name="fc7_mbox_loc", padding="same")(net['fc7'])
-    flatten = Flatten(name='fc7_mbox_loc_flat')
-    net['fc7_mbox_loc_flat'] = flatten(net['fc7_mbox_loc'])
+    net['fc7_mbox_loc_flat'] = Flatten(name='fc7_mbox_loc_flat')(net['fc7_mbox_loc'])
     name = 'fc7_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     net['fc7_mbox_conf'] = Conv2D(num_priors * num_classes, (3, 3), padding='same', name=name)(net['fc7'])
-    flatten = Flatten(name='fc7_mbox_conf_flat')
-    net['fc7_mbox_conf_flat'] = flatten(net['fc7_mbox_conf'])
+    net['fc7_mbox_conf_flat'] = Flatten(name='fc7_mbox_conf_flat')(net['fc7_mbox_conf'])
     priorbox = PriorBox(img_size, 60.0, max_size=114.0, aspect_ratios=[2, 3],
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='fc7_mbox_priorbox')
@@ -110,15 +106,13 @@ def SSD300(input_shape, num_classes=21):
     num_priors = 6
     x = Conv2D(num_priors * 4, (3, 3), padding='same', name='conv6_2_mbox_loc')(net['conv6_2'])
     net['conv6_2_mbox_loc'] = x
-    flatten = Flatten(name='conv6_2_mbox_loc_flat')
-    net['conv6_2_mbox_loc_flat'] = flatten(net['conv6_2_mbox_loc'])
+    net['conv6_2_mbox_loc_flat'] = Flatten(name='conv6_2_mbox_loc_flat')(net['conv6_2_mbox_loc'])
     name = 'conv6_2_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     x = Conv2D(num_priors * num_classes, (3, 3), padding='same', name=name)(net['conv6_2'])
     net['conv6_2_mbox_conf'] = x
-    flatten = Flatten(name='conv6_2_mbox_conf_flat')
-    net['conv6_2_mbox_conf_flat'] = flatten(net['conv6_2_mbox_conf'])
+    net['conv6_2_mbox_conf_flat'] = Flatten(name='conv6_2_mbox_conf_flat')(net['conv6_2_mbox_conf'])
     priorbox = PriorBox(img_size, 114.0, max_size=168.0, aspect_ratios=[2, 3],
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv6_2_mbox_priorbox')
@@ -127,15 +121,13 @@ def SSD300(input_shape, num_classes=21):
     num_priors = 6
     x = Conv2D(num_priors * 4, (3, 3), padding='same', name='conv7_2_mbox_loc')(net['conv7_2'])
     net['conv7_2_mbox_loc'] = x
-    flatten = Flatten(name='conv7_2_mbox_loc_flat')
-    net['conv7_2_mbox_loc_flat'] = flatten(net['conv7_2_mbox_loc'])
+    net['conv7_2_mbox_loc_flat'] = Flatten(name='conv7_2_mbox_loc_flat')(net['conv7_2_mbox_loc'])
     name = 'conv7_2_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     x = Conv2D(num_priors * num_classes, (3, 3), padding='same', name=name)(net['conv7_2'])
     net['conv7_2_mbox_conf'] = x
-    flatten = Flatten(name='conv7_2_mbox_conf_flat')
-    net['conv7_2_mbox_conf_flat'] = flatten(net['conv7_2_mbox_conf'])
+    net['conv7_2_mbox_conf_flat'] = Flatten(name='conv7_2_mbox_conf_flat')(net['conv7_2_mbox_conf'])
     priorbox = PriorBox(img_size, 168.0, max_size=222.0, aspect_ratios=[2, 3],
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv7_2_mbox_priorbox')
@@ -144,15 +136,13 @@ def SSD300(input_shape, num_classes=21):
     num_priors = 6
     x = Conv2D(num_priors * 4, (3, 3), padding='same', name='conv8_2_mbox_loc')(net['conv8_2'])
     net['conv8_2_mbox_loc'] = x
-    flatten = Flatten(name='conv8_2_mbox_loc_flat')
-    net['conv8_2_mbox_loc_flat'] = flatten(net['conv8_2_mbox_loc'])
+    net['conv8_2_mbox_loc_flat'] = Flatten(name='conv8_2_mbox_loc_flat')(net['conv8_2_mbox_loc'])
     name = 'conv8_2_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     x = Conv2D(num_priors * num_classes, (3, 3), padding='same', name=name)(net['conv8_2'])
     net['conv8_2_mbox_conf'] = x
-    flatten = Flatten(name='conv8_2_mbox_conf_flat')
-    net['conv8_2_mbox_conf_flat'] = flatten(net['conv8_2_mbox_conf'])
+    net['conv8_2_mbox_conf_flat'] = Flatten(name='conv8_2_mbox_conf_flat')(net['conv8_2_mbox_conf'])
     priorbox = PriorBox(img_size, 222.0, max_size=276.0, aspect_ratios=[2, 3],
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv8_2_mbox_priorbox')
