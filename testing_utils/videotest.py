@@ -78,19 +78,19 @@ class VideoTest(object):
                     
         """
     
-        vid = cv2.VideoCapture(video_path)
-        if not vid.isOpened():
+        video = cv2.VideoCapture()
+        if not video.open(video_path):
             raise IOError(("Couldn't open video file or webcam. If you're "
             "trying to open a webcam, make sure you video_path is an integer!"))
         
-        # Compute aspect ratio of video     
-        vidw = vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-        vidh = vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+        # Compute aspect ratio of video
+        vidw = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+        vidh = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
         vidar = vidw/vidh
         
         # Skip frames until reaching start_frame
         if start_frame > 0:
-            vid.set(cv2.cv.CV_CAP_PROP_POS_MSEC, start_frame)
+            video.set(cv2.CAP_PROP_POS_MSEC, start_frame)
             
         accum_time = 0
         curr_fps = 0
@@ -98,7 +98,7 @@ class VideoTest(object):
         prev_time = timer()
             
         while True:
-            retval, orig_image = vid.read()
+            retval, orig_image = video.read()
             if not retval:
                 print("Done!")
                 return
@@ -158,7 +158,7 @@ class VideoTest(object):
                     text_bot = (xmin + 80, ymin + 5)
                     text_pos = (xmin + 5, ymin)
                     cv2.rectangle(to_draw, text_top, text_bot, self.class_colors[class_num], -1)
-                    cv2.putText(to_draw, text, text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0,0,0), 1)
+                    cv2.putText(to_draw, text, text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 1)
             
             # Calculate FPS
             # This computes FPS for everything, not just the model's execution 
@@ -174,10 +174,9 @@ class VideoTest(object):
                 curr_fps = 0
             
             # Draw FPS in top left corner
-            cv2.rectangle(to_draw, (0,0), (50, 17), (255,255,255), -1)
-            cv2.putText(to_draw, fps, (3,10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0,0,0), 1)
+            cv2.rectangle(to_draw, (0, 0), (50, 17), (255, 255, 255), -1)
+            cv2.putText(to_draw, fps, (3, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 1)
             
             cv2.imshow("SSD result", to_draw)
             cv2.waitKey(10)
-            
-        
+
